@@ -1,0 +1,5 @@
+red,arquitectura,capas_ocultas,conexiones,parametros,seed_model,archivo,acc_val_red_densa_aleatoria,acc_test_red_densa_aleatoria
+R1,9-128-2,1,1408,1538,100,R1_inicial.pth,0.3721,0.3257
+R2,9-256-128-2,2,35328,35714,100,R2_inicial.pth,0.6584,0.6743
+R3,9-512-256-128-2,3,168704,169602,100,R3_inicial.pth,0.5649,0.4857
+R5,9-1024-512-256-128-2,4,697600,699522,100,R5_inicial.pth,0.4008,0.4457
