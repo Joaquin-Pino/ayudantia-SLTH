@@ -1,0 +1,55 @@
+# Configuración del experimento SLTH con Scatter Search (SS)
+# Strong Lottery Ticket Hypothesis - SS Method
+
+# Dataset
+dataset:
+  name: "wine"
+  seed_split: [300]
+  train_ratio: 0.0 
+  val_ratio: 0.75  
+  test_ratio: 0.25
+
+# Arquitecturas base
+architectures:
+  - [13, 128, 3]                  # R1
+  - [13, 256, 128, 3]             # R2
+  - [13, 512, 256, 128, 3]        # R3
+  - [13, 1024, 512, 256, 128, 3]  # R5
+
+# Sparsity levels
+sparsities: [0.1, 0.2]
+
+# Semillas
+seed_model: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
+seed_search: [200]
+num_replicas: 1
+
+# Método
+method: "SS"
+
+# Hiperparámetros de Scatter Search
+SS:
+  refset_size: 10
+  refset_quality_ratio: 0.5
+  diversification_size: 15
+  ts_tenure: 7
+  ts_max_iter: 30
+  ts_max_no_improve: 15
+  max_iter: 50
+  max_evals: 10000
+  max_no_improve: 20
+  min_diversity: null
+
+# Salida
+output:
+  results_csv: "results/2-SS-Base/runs.csv"
+  masks_dir:   "results/2-SS-Base/best_masks"
+  plots_dir:   "results/2-SS-Base/plots"
+  logs_dir:    "results/2-SS-Base/logs"
+
+# Logging
+logging:
+  verbose: false
+  save_traces: true
+  plot_convergence: true
+  visualize_winner: false

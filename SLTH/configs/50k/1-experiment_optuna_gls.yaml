@@ -1,0 +1,62 @@
+# Configuración del experimento SLTH con Guided Local Search (GLS)
+# Strong Lottery Ticket Hypothesis - GLS Method
+
+# Dataset
+dataset:
+  name: "wine"
+  seed_split: [300]
+  train_ratio: 0.0 
+  val_ratio: 0.75  
+  test_ratio: 0.25
+
+# Arquitecturas base
+architectures:
+  - [13, 128, 3]                  # R1
+  - [13, 256, 128, 3]             # R2
+  - [13, 512, 256, 128, 3]        # R3
+  - [13, 1024, 512, 256, 128, 3]  # R5
+
+# Sparsity levels
+sparsities: [0.1,0.2,0.28,0.3,0.4,0.5]
+
+# Semillas
+seed_model: [100]
+seed_search: [200]
+num_replicas: 11
+
+# ========================================
+# MÉTODO: GUIDED LOCAL SEARCH (GLS)
+# ========================================
+method: "GLS"
+
+# Hiperparámetros GLS
+GLS:
+  alpha: 0.65
+  lambda: 0.01
+  max_iter: 2000
+  max_evals: 50000
+  max_no_improve: 150
+  ls_max_neighbors: 15
+
+# Baseline
+baselines:
+  random_mask:
+    enabled: true
+    num_repetitions: 30
+  magnitude_mask:
+    enabled: true
+    local_search_iterations: 50
+
+# Salida
+output:
+  results_csv: "results/50k/1-GLS-Optuna/runs.csv"
+  masks_dir: "results/50k/1-GLS-Optuna/best_masks"
+  plots_dir: "results/50k/1-GLS-Optuna/plots"
+  logs_dir: "results/50k/1-GLS-Optuna/logs"
+
+# Configuración de logging
+logging:
+  verbose: false
+  save_masks: false
+  save_traces: true
+  plot_convergence: false

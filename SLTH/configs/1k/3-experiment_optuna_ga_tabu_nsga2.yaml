@@ -1,0 +1,66 @@
+# Configuración del experimento SLTH con GA + Tabu Search + NSGA-II
+# Strong Lottery Ticket Hypothesis - GA + Tabu Search + NSGA-II Method
+
+# Dataset
+dataset:
+  name: "wine"
+  seed_split: [300]
+  train_ratio: 0.0 
+  val_ratio: 0.75  
+  test_ratio: 0.25
+
+# Arquitecturas base
+architectures:
+  - [13, 128, 3]                  # R1
+  - [13, 256, 128, 3]             # R2
+  - [13, 512, 256, 128, 3]        # R3
+  - [13, 1024, 512, 256, 128, 3]  # R5
+
+# Sparsity levels (En este caso se explora en un rango de min a max)
+sparsities: [0.5]
+
+# Semillas
+seed_model: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
+seed_search: [200]
+num_replicas: 1
+
+# Método
+method: "GA_TABU_NSGA2"
+
+# ========================================
+# MÉTODO: GUIDED LOCAL SEARCH (GA + Tabu Search + NSGA-II)
+# ========================================
+GA_TABU_NSGA2:
+  # Parámetros del Algoritmo Genético
+  pop_size: 50
+  max_generations: 100
+  mutation_rate: 0.01
+  crossover_rate: 0.9
+  tournament_size: 2
+  
+  # Rango de sparsity (multiobjetivo)
+  min_sparsity: 0.1
+  max_sparsity: 0.9
+  
+  # Parámetros de Tabu Search
+  tabu_tenure: 5
+  tabu_max_iter: 20
+  tabu_max_no_improve: 10
+  apply_tabu_every: 10
+  
+  # Límites globales
+  max_evals: 10000
+
+# Salidas
+output:
+  results_csv: "results/GA_TABU_NSGA2-R1/runs.csv"
+  masks_dir:   "results/GA_TABU_NSGA2-R1/best_masks"
+  plots_dir:   "results/GA_TABU_NSGA2-R1/plots"
+  logs_dir:    "results/GA_TABU_NSGA2-R1/logs"
+
+# Logging
+logging:
+  verbose: true
+  save_traces: true
+  plot_convergence: true
+  visualize_winner: false

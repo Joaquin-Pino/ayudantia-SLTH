@@ -1,0 +1,68 @@
+# Configuración para optimización de hiperparámetros Scatter Search con Optuna
+
+optimization:
+  architectures:
+    - [13, 128, 3]              # R1
+    - [13, 256, 128, 3]         # R2
+    - [13, 512, 256, 128, 3]    # R3
+    - [13, 1024, 512, 256, 128, 3]  # R5
+  
+  sparsities: [0.1, 0.2, 0.3, 0.4, 0.5]
+  
+  # Número de trials de Optuna (más trials = mejor exploración)
+  n_trials: 51
+  
+  # Semilla base para reproducibilidad
+  seed_base: 42
+  
+  # Nombre del estudio
+  study_name: "ss_wine_optimization"
+
+# Espacio de búsqueda de hiperparámetros
+search_space:
+  refset_size:
+    min: 4
+    max: 30
+    description: "Tamaño del conjunto de referencias"
+  
+  diversification_size:
+    min: 50
+    max: 200
+    step: 5
+    description: "Tamaño de la población inicial diversa"
+  
+  ts_tenure:
+    min: 5
+    max: 20
+    step: 1
+    description: "Tenure de la lista tabú"
+  
+  ts_max_iter:
+    min: 10
+    max: 50
+    step: 5
+    description: "Iteraciones máximas del Tabu Search interno"
+  
+  ts_max_no_improve:
+    min: 5
+    max: 25
+    step: 5
+    description: "Parada por estancamiento en Tabu Search"
+  
+  max_no_improve:
+    min: 5
+    max: 50
+    step: 5
+    description: "Parada por estancamiento en Scatter Search principal"
+  
+  max_iter:
+    min: 10
+    max: 100
+    step: 10
+    description: "Iteraciones máximas de Scatter Search"
+
+# Parámetros fijos (no optimizados)
+fixed_params:
+  refset_quality_ratio: 0.5  # 50% calidad, 50% diversidad
+  min_diversity: null  # Auto-calculado (5% de conexiones totales)
+

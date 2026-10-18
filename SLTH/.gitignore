@@ -1,0 +1,54 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---- Entornos virtuales ----
+.venv/
+venv/
+env/
+ENV/
+
+# ---- Herramientas / caches ----
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+
+# ---- IDE / SO ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- Optuna ----
+*.db
+*.sqlite3
+optuna_*.log
+
+# ---- Resultados de experimentos ----
+results/
+!results/.gitkeep
+
+# Artefactos generados
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+*.log
+plots/
+logs/
+best_masks/
+
+# ---- Notas locales ----
+scratch/
+tmp/
+*.tmp
