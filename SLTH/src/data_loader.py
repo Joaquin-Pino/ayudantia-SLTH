@@ -1,5 +1,5 @@
 """
-Carga y preprocesamiento de datos (Wine).
+Carga y preprocesamiento de datos (Wine, BCW).
 Partición estratificada reproducible.
 """
 
@@ -105,6 +105,97 @@ def load_wine_data(seed_split: int = 300,
         print(f"  {split_name} por clase: {class_counts}")
     
     return X_train, X_val, X_test, y_train, y_val, y_test, scaler
+
+
+def load_bcw_data(seed_split: int = 300,
+                  train_ratio: float = 0.0,
+                  val_ratio: float = 0.75,
+                  test_ratio: float = 0.25,
+                  path: str = "data/breast_cancer/breast-cancer-wisconsin.data",
+                  dedup: bool = False) -> Tuple:
+    """
+    Carga Breast Cancer Wisconsin (Original) con el mismo protocolo que Wine.
+
+    Clase 2 -> 0 (benigno), 4 -> 1 (maligno). Los '?' (bare_nuclei) se imputan con
+    la mediana del conjunto de trabajo (val), sin fuga hacia test.
+    Con dedup=True se quitan duplicados exactos (features + etiqueta) antes del split.
+
+    Returns:
+        Tupla (X_train, X_val, X_test, y_train, y_val, y_test, scaler)
+    """
+    assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-6, \
+        "Las proporciones deben sumar 1.0"
+
+    set_seed(seed_split)
+
+    cols = ["id", "clump_thickness", "uniformity_cell_size", "uniformity_cell_shape",
+            "marginal_adhesion", "single_epithelial_cell_size", "bare_nuclei",
+            "bland_chromatin", "normal_nucleoli", "mitoses", "class"]
+    df = pd.read_csv(path, header=None, names=cols, na_values="?").drop(columns=["id"])
+    df["class"] = df["class"].map({2: 0, 4: 1}) ## convertir datos categoricos 
+    
+    if dedup:
+        n0 = len(df)
+        df = df.drop_duplicates().reset_index(drop=True)
+        print(f"dedup: {n0} -> {len(df)} filas")
+
+    X = df.drop(columns=["class"]).to_numpy(dtype=np.float64)
+    y = df["class"].to_numpy(dtype=np.int64)
+
+    print(f"Dataset BCW cargado: {X.shape[0]} muestras, {X.shape[1]} features, {len(np.unique(y))} clases")
+
+    def _impute(X_fit, *others):
+        med = np.nanmedian(X_fit, axis=0)
+        out = []
+        for A in (X_fit,) + others:
+            A = A.copy()
+            idx = np.where(np.isnan(A))
+            A[idx] = med[idx[1]]
+            out.append(A)
+        return out
+
+    if train_ratio == 0.0:
+        X_train, y_train = np.array([]), np.array([])
+        relative_test_ratio = test_ratio / (val_ratio + test_ratio)
+        X_val, X_test, y_val, y_test = train_test_split(
+            X, y, test_size=relative_test_ratio, stratify=y, random_state=seed_split)
+        X_val, X_test = _impute(X_val, X_test)
+        scaler = StandardScaler()
+        X_val = scaler.fit_transform(X_val)
+        X_test = scaler.transform(X_test)
+    else:
+        temp_ratio = val_ratio + test_ratio
+        X_train, X_temp, y_train, y_temp = train_test_split(
+            X, y, test_size=temp_ratio, stratify=y, random_state=seed_split)
+        relative_test_ratio = test_ratio / temp_ratio
+        X_val, X_test, y_val, y_test = train_test_split(
+            X_temp, y_temp, test_size=relative_test_ratio, stratify=y_temp, random_state=seed_split)
+        X_train, X_val, X_test = _impute(X_train, X_val, X_test)
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
+        X_val = scaler.transform(X_val)
+        X_test = scaler.transform(X_test)
+
+    print(f"\nDistribución del split: train={len(y_train)} val={len(y_val)} test={len(y_test)}")
+    for name, ys in (("Val", y_val), ("Test", y_test)):
+        print(f"  {name} por clase: {np.bincount(ys)}")
+
+    return (X_train.astype(np.float32) if len(X_train) else X_train,
+            X_val.astype(np.float32), X_test.astype(np.float32),
+            y_train, y_val, y_test, scaler)
+
+
+def load_dataset(name: str, **kwargs) -> Tuple:
+    """Despachador de datasets según config['dataset']['name']."""
+    if name == "wine":
+        kwargs.pop("path", None)
+        kwargs.pop("dedup", None)
+        return load_wine_data(**kwargs)
+    if name == "bcw":
+        if kwargs.get("path") is None:
+            kwargs.pop("path", None)
+        return load_bcw_data(**kwargs)
+    raise ValueError(f"Dataset no soportado: {name}")
 
 
 def load_custom_dataset(filepath: str, 

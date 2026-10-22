@@ -1,0 +1,49 @@
+nohup: ignoring input
+
+================================================================================
+STRONG LOTTERY TICKET HYPOTHESIS - TESTBED
+================================================================================
+
+Traceback (most recent call last):
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 1103, in <module>
+    run_testbed(config_path)
+    ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 820, in run_testbed
+    config = load_config(config_path)
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 33, in load_config
+    with open(config_path, 'r') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'configs/experiment.yaml'
+bash: line 2: configs/1k/bcw/1-experiment_gls_bcw.yaml: Permission denied
+
+================================================================================
+STRONG LOTTERY TICKET HYPOTHESIS - TESTBED
+================================================================================
+
+Traceback (most recent call last):
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 1103, in <module>
+    run_testbed(config_path)
+    ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 820, in run_testbed
+    config = load_config(config_path)
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 33, in load_config
+    with open(config_path, 'r') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'configs/experiment.yaml'
+bash: line 2: configs/1k/bcw/2-experiment_ss_bcw.yaml: Permission denied
+
+================================================================================
+STRONG LOTTERY TICKET HYPOTHESIS - TESTBED
+================================================================================
+
+Traceback (most recent call last):
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 1103, in <module>
+    run_testbed(config_path)
+    ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 820, in run_testbed
+    config = load_config(config_path)
+  File "/home/joaquin/Documents/u/ayudantia_investigacion/SLTH/src/run_experiment.py", line 33, in load_config
+    with open(config_path, 'r') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'configs/experiment.yaml'
+bash: line 2: configs/1k/bcw/3-experiment_ga_tabu_nsga2_bcw.yaml: Permission denied

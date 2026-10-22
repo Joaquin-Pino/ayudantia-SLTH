@@ -18,7 +18,7 @@ from seeds import set_seed
 from model import build_mlp
 from mask import create_mask, create_magnitude_mask
 from eval import score
-from data_loader import load_wine_data, get_data_info
+from data_loader import load_wine_data, load_dataset, get_data_info
 from gls import run_gls_experiment
 from scatter_search import run_ss_experiment
 from ga_tabu_nsga2 import run_ga_tabu_nsga2_experiment
@@ -857,11 +857,14 @@ def run_testbed(config_path: str = "configs/experiment.yaml"):
     # Cargar datos
     print("\n[1/4] Cargando datos...")
     with Timer("Carga de datos"):
-        X_train, X_val, X_test, y_train, y_val, y_test, scaler = load_wine_data(
+        X_train, X_val, X_test, y_train, y_val, y_test, scaler = load_dataset(
+            config['dataset'].get('name', 'wine'),
             seed_split=seed_split_to_use,  # Usar solo el primero por ahora
             train_ratio=config['dataset']['train_ratio'],
             val_ratio=config['dataset']['val_ratio'],
-            test_ratio=config['dataset']['test_ratio']
+            test_ratio=config['dataset']['test_ratio'],
+            path=config['dataset'].get('path'),
+            dedup=config['dataset'].get('dedup', False)
         )
     
     data_info = get_data_info(X_train, y_train, X_val, y_val, X_test, y_test)
