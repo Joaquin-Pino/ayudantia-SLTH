@@ -5,6 +5,9 @@ Uso:
     python src/tune_optuna.py gls              [--config configs/optuna_gls.yaml] [--output-dir results/optuna_gls]
     python src/tune_optuna.py ss               [--config configs/optuna_ss.yaml]  [--output-dir results/optuna_ss]
     python src/tune_optuna.py ga_tabu_nsga2    [--config configs/optuna_ga_tabu_nsga2.yaml] [--output-dir results/optuna_ga_tabu_nsga2]
+
+Para otro dataset (p. ej. BCW), el config incluye una seccion 'dataset' con el mismo split del experimento:
+    python src/tune_optuna.py gls --config configs/optuna_gls_bcw.yaml --output-dir results/bcw/optuna_gls
 """
 
 import argparse
@@ -17,13 +20,32 @@ import yaml
 from optuna.trial import Trial
 from typing import List
 
-from data_loader import load_wine_data
+from data_loader import load_dataset, load_wine_data
 from gls import run_gls_experiment
 from ga_tabu_nsga2 import run_ga_tabu_nsga2_experiment
 from mask import create_mask
 from model import build_mlp
 from scatter_search import run_ss_experiment
 from seeds import set_seed
+
+
+def _load_data(dataset: dict | None, seed_base: int):
+    """
+    Carga los datos de la seccion 'dataset' del config, con el mismo split que el
+    experimento: Optuna puntua con el conjunto de busqueda (val) y no toca test.
+    Sin esa seccion se mantiene el comportamiento original (Wine, seed_split=seed_base).
+    """
+    if not dataset:
+        return load_wine_data(seed_split=seed_base)
+    return load_dataset(
+        dataset.get('name', 'wine'),
+        seed_split=dataset.get('seed_split', seed_base),
+        train_ratio=dataset['train_ratio'],
+        val_ratio=dataset['val_ratio'],
+        test_ratio=dataset['test_ratio'],
+        path=dataset.get('path'),
+        dedup=dataset.get('dedup', False),
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -33,7 +55,8 @@ from seeds import set_seed
 class GLSOptunaOptimizer:
     def __init__(self, architectures: List[List[int]], sparsities: List[float],
                  n_trials: int = 20, seed_base: int = 42,
-                 study_name: str = "gls_optimization"):
+                 study_name: str = "gls_optimization",
+                 dataset: dict | None = None):
         self.architectures = architectures
         self.sparsities = sparsities
         self.n_trials = n_trials
@@ -42,7 +65,7 @@ class GLSOptunaOptimizer:
 
         print("Cargando datos...")
         self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test, self.scaler = \
-            load_wine_data(seed_split=seed_base)
+            _load_data(dataset, seed_base)
         print(" Datos cargados")
 
     def objective(self, trial: Trial) -> float:
@@ -144,7 +167,8 @@ class GLSOptunaOptimizer:
 class SSOptunaOptimizer:
     def __init__(self, architectures: List[List[int]], sparsities: List[float],
                  n_trials: int = 20, seed_base: int = 42,
-                 study_name: str = "ss_optimization"):
+                 study_name: str = "ss_optimization",
+                 dataset: dict | None = None):
         self.architectures = architectures
         self.sparsities = sparsities
         self.n_trials = n_trials
@@ -153,7 +177,7 @@ class SSOptunaOptimizer:
 
         print("Cargando datos...")
         self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test, self.scaler = \
-            load_wine_data(seed_split=seed_base)
+            _load_data(dataset, seed_base)
         print(" Datos cargados")
 
     def objective(self, trial: Trial) -> float:
@@ -263,7 +287,8 @@ class GATabuNSGA2OptunaOptimizer:
     # sparsities no se usa: GA+NSGA2 explora el rango 0.1–0.9 como objetivo, no como HP.
     def __init__(self, architectures: List[List[int]],
                  n_trials: int = 20, seed_base: int = 42,
-                 study_name: str = "ga_tabu_nsga2_optimization"):
+                 study_name: str = "ga_tabu_nsga2_optimization",
+                 dataset: dict | None = None):
         self.architectures = architectures
         self.n_trials = n_trials
         self.seed_base = seed_base
@@ -271,7 +296,7 @@ class GATabuNSGA2OptunaOptimizer:
 
         print("Cargando datos...")
         self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test, self.scaler = \
-            load_wine_data(seed_split=seed_base)
+            _load_data(dataset, seed_base)
         print(" Datos cargados")
 
     def _calculate_hypervolume(self, f1_values: List[float], f2_values: List[float],
@@ -461,6 +486,7 @@ def run_gls(config_path: str, output_dir: str):
         architectures=opt['architectures'], sparsities=opt['sparsities'],
         n_trials=opt['n_trials'], seed_base=opt['seed_base'],
         study_name=opt.get('study_name', 'gls_optimization'),
+        dataset=config.get('dataset'),
     )
     study = optimizer.optimize()
     optimizer.print_results(study)
@@ -478,6 +504,7 @@ def run_ss(config_path: str, output_dir: str):
         architectures=opt['architectures'], sparsities=opt['sparsities'],
         n_trials=opt['n_trials'], seed_base=opt['seed_base'],
         study_name=opt.get('study_name', 'ss_optimization'),
+        dataset=config.get('dataset'),
     )
     study = optimizer.optimize()
     optimizer.print_results(study)
@@ -495,6 +522,7 @@ def run_ga_tabu_nsga2(config_path: str, output_dir: str):
         architectures=opt['architectures'],
         n_trials=opt['n_trials'], seed_base=opt['seed_base'],
         study_name=opt.get('study_name', 'ga_tabu_nsga2_optimization'),
+        dataset=config.get('dataset'),
     )
     study = optimizer.optimize()
     optimizer.print_results(study)
