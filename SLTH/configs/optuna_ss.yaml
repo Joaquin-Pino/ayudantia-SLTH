@@ -18,51 +18,5 @@ optimization:
   # Nombre del estudio
   study_name: "ss_wine_optimization"
 
-# Espacio de búsqueda de hiperparámetros
-search_space:
-  refset_size:
-    min: 4
-    max: 30
-    description: "Tamaño del conjunto de referencias"
-  
-  diversification_size:
-    min: 50
-    max: 200
-    step: 5
-    description: "Tamaño de la población inicial diversa"
-  
-  ts_tenure:
-    min: 5
-    max: 20
-    step: 1
-    description: "Tenure de la lista tabú"
-  
-  ts_max_iter:
-    min: 10
-    max: 50
-    step: 5
-    description: "Iteraciones máximas del Tabu Search interno"
-  
-  ts_max_no_improve:
-    min: 5
-    max: 25
-    step: 5
-    description: "Parada por estancamiento en Tabu Search"
-  
-  max_no_improve:
-    min: 5
-    max: 50
-    step: 5
-    description: "Parada por estancamiento en Scatter Search principal"
-  
-  max_iter:
-    min: 10
-    max: 100
-    step: 10
-    description: "Iteraciones máximas de Scatter Search"
-
-# Parámetros fijos (no optimizados)
-fixed_params:
-  refset_quality_ratio: 0.5  # 50% calidad, 50% diversidad
-  min_diversity: null  # Auto-calculado (5% de conexiones totales)
-
+# Los rangos de búsqueda y los parámetros fijos están en el objective() de cada
+# optimizador en src/tune_optuna.py (Tabla 2 del paper); este archivo no los define.
