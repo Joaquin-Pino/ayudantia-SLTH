@@ -22,9 +22,9 @@ architectures:
 sparsities: [0.1,0.2,0.28,0.3,0.4,0.5]
 
 # Semillas
-seed_model: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
+seed_model: [100]           # una sola red aleatoria compartida (como el paper)
 seed_search: [200]
-num_replicas: 1
+num_replicas: 11            # 11 corridas que solo cambian la semilla de busqueda
 
 # ========================================
 # MÉTODO: GUIDED LOCAL SEARCH (GLS)
