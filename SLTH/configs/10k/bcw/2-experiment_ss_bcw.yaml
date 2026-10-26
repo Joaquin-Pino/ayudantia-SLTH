@@ -1,0 +1,57 @@
+# Configuración del experimento SLTH con Scatter Search (SS)
+# Strong Lottery Ticket Hypothesis - SS Method
+
+# Dataset
+dataset:
+  name: "bcw"
+  path: "data/breast_cancer/breast-cancer-wisconsin.data"
+  dedup: false   # decisión pendiente con el profesor
+  seed_split: [300]
+  train_ratio: 0.0 
+  val_ratio: 0.75  
+  test_ratio: 0.25
+
+# Arquitecturas base
+architectures:
+  - [9, 128, 2]                  # R1
+  - [9, 256, 128, 2]             # R2
+  - [9, 512, 256, 128, 2]        # R3
+  - [9, 1024, 512, 256, 128, 2]  # R5
+
+# Sparsity levels
+sparsities: [0.1,0.2,0.28,0.3,0.4,0.5]
+
+# Semillas
+seed_model: [100]           # una sola red aleatoria compartida (como el paper)
+seed_search: [200]
+num_replicas: 11            # 11 corridas que solo cambian la semilla de busqueda
+
+# Método
+method: "SS"
+
+# Hiperparámetros de Scatter Search
+SS:
+  refset_size: 10
+  refset_quality_ratio: 0.5
+  diversification_size: 15
+  ts_tenure: 7
+  ts_max_iter: 30
+  ts_max_no_improve: 15
+  max_iter: 50
+  max_evals: 10000
+  max_no_improve: 20
+  min_diversity: null
+
+# Salida
+output:
+  results_csv: "results/bcw/10k/2-SS-Base/runs.csv"
+  masks_dir:   "results/bcw/10k/2-SS-Base/best_masks"
+  plots_dir:   "results/bcw/10k/2-SS-Base/plots"
+  logs_dir:    "results/bcw/10k/2-SS-Base/logs"
+
+# Configuración de logging
+logging:
+  verbose: false
+  save_masks: false
+  save_traces: true
+  plot_convergence: false
