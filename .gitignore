@@ -2,4 +2,4 @@ __pycache__
 *.md
 paper.pdf
 
-generar_redes/
+.generar_redes/

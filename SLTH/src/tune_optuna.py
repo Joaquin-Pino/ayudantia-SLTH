@@ -2,9 +2,9 @@
 Optimización de hiperparámetros con Optuna para GLS, Scatter Search y GA+TABU+NSGA2.
 
 Uso:
-    python src/optuna.py gls              [--config configs/optuna_gls.yaml] [--output-dir results/optuna_gls]
-    python src/optuna.py ss               [--config configs/optuna_ss.yaml]  [--output-dir results/optuna_ss]
-    python src/optuna.py ga_tabu_nsga2    [--config configs/optuna_ga_tabu_nsga2.yaml] [--output-dir results/optuna_ga_tabu_nsga2]
+    python src/tune_optuna.py gls              [--config configs/optuna_gls.yaml] [--output-dir results/optuna_gls]
+    python src/tune_optuna.py ss               [--config configs/optuna_ss.yaml]  [--output-dir results/optuna_ss]
+    python src/tune_optuna.py ga_tabu_nsga2    [--config configs/optuna_ga_tabu_nsga2.yaml] [--output-dir results/optuna_ga_tabu_nsga2]
 """
 
 import argparse
@@ -17,13 +17,13 @@ import yaml
 from optuna.trial import Trial
 from typing import List
 
-from .data_loader import load_wine_data
-from .gls import run_gls_experiment
-from .ga_tabu_nsga2 import run_ga_tabu_nsga2_experiment
-from .mask import create_mask
-from .model import build_mlp
-from .scatter_search import run_ss_experiment
-from .seeds import set_seed
+from data_loader import load_wine_data
+from gls import run_gls_experiment
+from ga_tabu_nsga2 import run_ga_tabu_nsga2_experiment
+from mask import create_mask
+from model import build_mlp
+from scatter_search import run_ss_experiment
+from seeds import set_seed
 
 
 # ─────────────────────────────────────────────────────────────────────────────
