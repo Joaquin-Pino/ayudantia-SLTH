@@ -308,12 +308,14 @@ class GATabuNSGA2OptunaOptimizer:
         if not valid_points:
             return 0.0
         points = sorted(valid_points, key=lambda x: x[0])
+        # Barrido en f1: cada franja [f1, next_f1) queda dominada desde el menor f2
+        # visto hasta ahí hasta f2_ref (los puntos dominados no suman área)
         hv = 0.0
-        prev_f2 = f2_ref
+        min_f2 = f2_ref
         for i, (f1, f2) in enumerate(points):
             next_f1 = points[i + 1][0] if i < len(points) - 1 else f1_ref
-            hv += (next_f1 - f1) * (prev_f2 - f2)
-            prev_f2 = min(prev_f2, f2)
+            min_f2 = min(min_f2, f2)
+            hv += (next_f1 - f1) * (f2_ref - min_f2)
         return hv
 
     def objective(self, trial: Trial) -> float:

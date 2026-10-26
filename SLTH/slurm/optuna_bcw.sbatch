@@ -16,7 +16,7 @@
 #SBATCH --time=24:00:00
 #SBATCH --output=logs/%x_%A_%a.out
 #SBATCH --error=logs/%x_%A_%a.out
-##SBATCH --partition=GPU
+#SBATCH --partition=GPU
 
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-$(dirname "$0")/..}"
