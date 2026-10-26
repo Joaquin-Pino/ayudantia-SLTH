@@ -1,0 +1,67 @@
+# Configuración para optimización de hiperparámetros GLS con Optuna
+
+# Dataset (mismo protocolo que configs/1k/bcw/*.yaml)
+dataset:
+  name: "bcw"
+  path: "data/breast_cancer/breast-cancer-wisconsin.data"
+  dedup: false
+  seed_split: 300
+  train_ratio: 0.0
+  val_ratio: 0.75
+  test_ratio: 0.25
+
+optimization:
+  architectures:
+    - [9, 128, 2]              # R1
+    - [9, 256, 128, 2]         # R2
+    - [9, 512, 256, 128, 2]    # R3
+    - [9, 1024, 512, 256, 128, 2]  # R5
+  
+  sparsities: [0.1, 0.2, 0.3, 0.4, 0.5]
+  
+  # Número de trials de Optuna
+  n_trials: 51
+  
+  # Semilla base para reproducibilidad
+  seed_base: 42
+  
+  # Nombre del estudio
+  study_name: "gls_bcw_optimization"
+
+# Espacio de búsqueda de hiperparámetros
+search_space:
+  alpha:
+    min: 0.5
+    max: 0.95
+    step: 0.05
+    description: "Factor de decaimiento de penalizaciones"
+  
+  lambda:
+    min: 0.01
+    max: 0.5
+    step: 0.01
+    description: "Peso de penalización de features"
+  
+  max_iter:
+    min: 1000
+    max: 50000
+    step: 1000
+    description: "Iteraciones máximas de GLS"
+  
+  max_no_improve:
+    min: 50
+    max: 200
+    step: 25
+    description: "Iteraciones sin mejora antes de terminar"
+  
+  ls_max_neighbors:
+    min: 50
+    max: 200
+    step: 25
+    description: "Máximo número de vecinos a explorar en búsqueda local"
+  
+  ls_max_iters:
+    min: 3
+    max: 15
+    step: 1
+    description: "Máximo ciclos de mejora en búsqueda local (velocidad vs calidad)"
