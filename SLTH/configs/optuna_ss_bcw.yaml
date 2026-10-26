@@ -1,0 +1,78 @@
+# Configuración para optimización de hiperparámetros Scatter Search con Optuna
+
+# Dataset (mismo protocolo que configs/1k/bcw/*.yaml)
+dataset:
+  name: "bcw"
+  path: "data/breast_cancer/breast-cancer-wisconsin.data"
+  dedup: false
+  seed_split: 300
+  train_ratio: 0.0
+  val_ratio: 0.75
+  test_ratio: 0.25
+
+optimization:
+  architectures:
+    - [9, 128, 2]              # R1
+    - [9, 256, 128, 2]         # R2
+    - [9, 512, 256, 128, 2]    # R3
+    - [9, 1024, 512, 256, 128, 2]  # R5
+  
+  sparsities: [0.1, 0.2, 0.3, 0.4, 0.5]
+  
+  # Número de trials de Optuna (más trials = mejor exploración)
+  n_trials: 51
+  
+  # Semilla base para reproducibilidad
+  seed_base: 42
+  
+  # Nombre del estudio
+  study_name: "ss_bcw_optimization"
+
+# Espacio de búsqueda de hiperparámetros
+search_space:
+  refset_size:
+    min: 4
+    max: 30
+    description: "Tamaño del conjunto de referencias"
+  
+  diversification_size:
+    min: 50
+    max: 200
+    step: 5
+    description: "Tamaño de la población inicial diversa"
+  
+  ts_tenure:
+    min: 5
+    max: 20
+    step: 1
+    description: "Tenure de la lista tabú"
+  
+  ts_max_iter:
+    min: 10
+    max: 50
+    step: 5
+    description: "Iteraciones máximas del Tabu Search interno"
+  
+  ts_max_no_improve:
+    min: 5
+    max: 25
+    step: 5
+    description: "Parada por estancamiento en Tabu Search"
+  
+  max_no_improve:
+    min: 5
+    max: 50
+    step: 5
+    description: "Parada por estancamiento en Scatter Search principal"
+  
+  max_iter:
+    min: 10
+    max: 100
+    step: 10
+    description: "Iteraciones máximas de Scatter Search"
+
+# Parámetros fijos (no optimizados)
+fixed_params:
+  refset_quality_ratio: 0.5  # 50% calidad, 50% diversidad
+  min_diversity: null  # Auto-calculado (5% de conexiones totales)
+

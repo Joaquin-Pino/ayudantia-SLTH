@@ -1,0 +1,91 @@
+# Configuración para optimización de hiperparámetros GA+TABU+NSGA2 con Optuna
+
+# Dataset (mismo protocolo que configs/1k/bcw/*.yaml)
+dataset:
+  name: "bcw"
+  path: "data/breast_cancer/breast-cancer-wisconsin.data"
+  dedup: false
+  seed_split: 300
+  train_ratio: 0.0
+  val_ratio: 0.75
+  test_ratio: 0.25
+
+optimization:
+  architectures:
+    - [9, 128, 2]              # R1
+    - [9, 256, 128, 2]         # R2
+    - [9, 512, 256, 128, 2]    # R3
+    - [9, 1024, 512, 256, 128, 2]  # R5
+
+  # Número de trials de Optuna
+  n_trials: 51
+
+  # Semilla base para reproducibilidad
+  seed_base: 42
+
+  # Nombre del estudio
+  study_name: "ga_tabu_nsga2_bcw_optimization"
+
+# Espacio de búsqueda de hiperparámetros
+# Nota: los rangos de sparsity son fijos (0.1–0.9); GA+NSGA2 los explora
+# en modo multiobjetivo, no como hiperparámetro.
+search_space:
+  # Algoritmo Genético
+  pop_size:
+    min: 20
+    max: 100
+    step: 10
+    description: "Tamaño de la población"
+
+  max_generations:
+    min: 50
+    max: 200
+    step: 25
+    description: "Generaciones máximas del GA"
+
+  mutation_rate:
+    min: 0.001
+    max: 0.05
+    description: "Probabilidad de mutación por bit"
+
+  crossover_rate:
+    min: 0.7
+    max: 0.95
+    description: "Probabilidad de crossover"
+
+  tournament_size:
+    min: 2
+    max: 5
+    step: 1
+    description: "Tamaño del torneo para selección"
+
+  # Tabu Search (mejora local)
+  tabu_tenure:
+    min: 3
+    max: 15
+    step: 1
+    description: "Tenure de la lista tabú"
+
+  tabu_max_iter:
+    min: 10
+    max: 50
+    step: 5
+    description: "Iteraciones máximas del Tabu Search"
+
+  tabu_max_no_improve:
+    min: 5
+    max: 25
+    step: 5
+    description: "Parada por estancamiento en Tabu Search"
+
+  apply_tabu_every:
+    min: 5
+    max: 20
+    step: 5
+    description: "Aplicar Tabu Search cada N generaciones"
+
+# Parámetros fijos (no optimizados)
+fixed_params:
+  min_sparsity: 0.1   # Rango fijo explorado por NSGA2
+  max_sparsity: 0.9
+  max_evals: 10000
