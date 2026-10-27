@@ -3,3 +3,4 @@ __pycache__
 paper.pdf
 
 .generar_redes/
+.DS_Store

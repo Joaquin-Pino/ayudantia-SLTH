@@ -190,7 +190,7 @@ class SSOptunaOptimizer:
         max_iter = trial.suggest_int('max_iter', 10, 100, step=10)
 
         hp_ss = {
-            'refset_size': refset_size, 'refset_quality_ratio': 0.5,
+            'refset_size': refset_size, 'refset_quality_ratio': 0.69,
             'diversification_size': diversification_size,
             'ts_tenure': ts_tenure, 'ts_max_iter': ts_max_iter,
             'ts_max_no_improve': ts_max_no_improve,
@@ -255,7 +255,7 @@ class SSOptunaOptimizer:
         bt = study.best_trial
         cfg = {
             'SS': {
-                'refset_size': bp['refset_size'], 'refset_quality_ratio': 0.5,
+                'refset_size': bp['refset_size'], 'refset_quality_ratio': 0.69,
                 'diversification_size': bp['diversification_size'],
                 'ts_tenure': bp['ts_tenure'], 'ts_max_iter': bp['ts_max_iter'],
                 'ts_max_no_improve': bp['ts_max_no_improve'],
