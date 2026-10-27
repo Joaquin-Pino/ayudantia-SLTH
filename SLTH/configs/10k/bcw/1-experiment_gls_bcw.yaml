@@ -33,12 +33,13 @@ method: "GLS"
 
 # Hiperparámetros GLS
 GLS:
-  alpha: 0.65
-  lambda: 0.48
-  max_iter: 1600
+  alpha: 0.95
+  lambda: 0.02
+  max_iter: 1800
   max_evals: 10000
-  max_no_improve: 150
-  ls_max_neighbors: 75
+  max_no_improve: 175
+  ls_max_neighbors: 175
+  ls_max_iters: 11
 
 # Baseline
 baselines:
