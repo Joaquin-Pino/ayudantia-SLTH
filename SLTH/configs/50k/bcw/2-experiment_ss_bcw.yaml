@@ -32,14 +32,14 @@ method: "SS"
 # Hiperparámetros de Scatter Search
 SS:
   refset_size: 10
-  refset_quality_ratio: 0.5
-  diversification_size: 15
-  ts_tenure: 7
-  ts_max_iter: 30
-  ts_max_no_improve: 15
-  max_iter: 50
+  refset_quality_ratio: 0.69
+  diversification_size: 75
+  ts_tenure: 13
+  ts_max_iter: 15
+  ts_max_no_improve: 25
+  max_iter: 100
   max_evals: 50000
-  max_no_improve: 20
+  max_no_improve: 5
   min_diversity: null
 
 # Salida
