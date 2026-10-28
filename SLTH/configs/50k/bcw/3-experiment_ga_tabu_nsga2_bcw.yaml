@@ -35,7 +35,7 @@ method: "GA_TABU_NSGA2"
 GA_TABU_NSGA2:
   # Parámetros del Algoritmo Genético
   pop_size: 50
-  max_generations: 375
+  max_generations: 375   # 75 (Optuna, 10k) x 5, como el paper: generaciones aumentadas según el presupuesto; max_evals manda
   mutation_rate: 0.01497
   crossover_rate: 0.78095
   tournament_size: 4
