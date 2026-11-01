@@ -6,7 +6,7 @@ para comparar métodos y arquitecturas. No modifica ningún archivo del proyecto
 ni escribe resultados: usa run_single_experiment sin loggers.
 
 Uso (desde SLTH/):
-    ../.venv/bin/python -u profile_methods.py configs/50k/bcw/2-experiment_ss_bcw.yaml \
+    ../.venv/bin/python -u profile_methods.py configs/50k/wdbc/2-experiment_ss_wdbc.yaml \
         --arch-idx 3 --max-evals 1000
 
 Opciones:

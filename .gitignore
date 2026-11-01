@@ -4,3 +4,6 @@ paper.pdf
 
 .generar_redes/
 .DS_Store
+
+# Resultados de la verificacion de optimizaciones (old vs new)
+SLTH/verificacion_optimizacion/

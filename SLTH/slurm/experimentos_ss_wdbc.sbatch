@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Experimentos de BCW con 10k y 50k evaluaciones para Scatter Search (SS): un job array con una
+# Experimentos de WDBC con 10k y 50k evaluaciones para Scatter Search (SS): un job array con una
 # tarea por config (0 = SS 10k, 1 = SS 50k). Cada tarea corre run_experiment.py con su config;
 # las rutas de salida están en el `output` del YAML.
 #
 # Uso (desde SLTH/):
-#   mkdir -p logs && sbatch slurm/experimentos_ss_bcw.sbatch
-#   sbatch --array=0 slurm/experimentos_ss_bcw.sbatch   # solo el de 10k
-#   PY=/ruta/a/python sbatch slurm/experimentos_ss_bcw.sbatch
+#   mkdir -p logs && sbatch slurm/experimentos_ss_wdbc.sbatch
+#   sbatch --array=0 slurm/experimentos_ss_wdbc.sbatch   # solo el de 10k
+#   PY=/ruta/a/python sbatch slurm/experimentos_ss_wdbc.sbatch
 #
-# Resultados en results/bcw/{10k,50k}/2-SS-Base/...  |  logs en logs/experimentos_ss_bcw_<job>_<tarea>.out
+# Resultados en results/wdbc/{10k,50k}/2-SS-Base/...  |  logs en logs/experimentos_ss_wdbc_<job>_<tarea>.out
 #
-#SBATCH --job-name=experimentos_ss_bcw
+#SBATCH --job-name=experimentos_ss_wdbc
 #SBATCH --array=0-1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
@@ -26,8 +26,8 @@ cd "${SLURM_SUBMIT_DIR:-$(dirname "$0")/..}"
 PY=${PY:-../.venv/bin/python}
 
 CONFIGS=(
-  configs/10k/bcw/2-experiment_ss_bcw.yaml
-  configs/50k/bcw/2-experiment_ss_bcw.yaml
+  configs/10k/wdbc/2-experiment_ss_wdbc.yaml
+  configs/50k/wdbc/2-experiment_ss_wdbc.yaml
 )
 CONFIG=${CONFIGS[$SLURM_ARRAY_TASK_ID]}
 

@@ -3,19 +3,19 @@
 
 # Dataset
 dataset:
-  name: "bcw"
-  path: "data/breast_cancer/breast-cancer-wisconsin.data"
-  dedup: true   # duplicados exactos eliminados antes del split (evita fuga entre búsqueda y test)
+  name: "wdbc"
+  path: "data/breast_cancer/wdbc.data"
   seed_split: [300]
   train_ratio: 0.0 
-  val_ratio: 0.75  
-  test_ratio: 0.25
+  val_ratio: 0.5   
+  test_ratio: 0.5
 
 # Arquitecturas base
 architectures:
-  - [9, 128, 2]                  # R1
-  - [9, 256, 128, 2]             # R2
-  - [9, 512, 256, 128, 2]        # R3
+  - [30, 128, 2]                  # R1
+  - [30, 256, 128, 2]             # R2
+  - [30, 512, 256, 128, 2]        # R3
+  - [30, 1024, 512, 256, 128, 2]  # R5
 
 # Sparsity levels (En este caso se explora en un rango de min a max)
 sparsities: [0.5]
@@ -34,10 +34,10 @@ method: "GA_TABU_NSGA2"
 GA_TABU_NSGA2:
   # Parámetros del Algoritmo Genético
   pop_size: 50
-  max_generations: 375   # 75 (Optuna, 10k) x 5, como el paper: generaciones aumentadas según el presupuesto; max_evals manda
-  mutation_rate: 0.01497
-  crossover_rate: 0.78095
-  tournament_size: 4
+  max_generations: 100
+  mutation_rate: 0.01
+  crossover_rate: 0.9
+  tournament_size: 2
   
   # Rango de sparsity (multiobjetivo)
   min_sparsity: 0.1
@@ -45,19 +45,19 @@ GA_TABU_NSGA2:
   
   # Parámetros de Tabu Search
   tabu_tenure: 5
-  tabu_max_iter: 45
-  tabu_max_no_improve: 20
-  apply_tabu_every: 5
+  tabu_max_iter: 20
+  tabu_max_no_improve: 10
+  apply_tabu_every: 10
   
   # Límites globales
-  max_evals: 50000
+  max_evals: 1000
 
 # Salidas
 output:
-  results_csv: "results/bcw/50k/3-GA_TABU_NSGA2-Base/runs.csv"
-  masks_dir:   "results/bcw/50k/3-GA_TABU_NSGA2-Base/best_masks"
-  plots_dir:   "results/bcw/50k/3-GA_TABU_NSGA2-Base/plots"
-  logs_dir:    "results/bcw/50k/3-GA_TABU_NSGA2-Base/logs"
+  results_csv: "results/wdbc/1k/3-GA_TABU_NSGA2-Base/runs.csv"
+  masks_dir:   "results/wdbc/1k/3-GA_TABU_NSGA2-Base/best_masks"
+  plots_dir:   "results/wdbc/1k/3-GA_TABU_NSGA2-Base/plots"
+  logs_dir:    "results/wdbc/1k/3-GA_TABU_NSGA2-Base/logs"
 
 # Logging
 logging:

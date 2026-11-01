@@ -6,8 +6,8 @@ Uso:
     python src/tune_optuna.py ss               [--config configs/optuna_ss.yaml]  [--output-dir results/optuna_ss]
     python src/tune_optuna.py ga_tabu_nsga2    [--config configs/optuna_ga_tabu_nsga2.yaml] [--output-dir results/optuna_ga_tabu_nsga2]
 
-Para otro dataset (p. ej. BCW), el config incluye una seccion 'dataset' con el mismo split del experimento:
-    python src/tune_optuna.py gls --config configs/optuna_gls_bcw.yaml --output-dir results/bcw/optuna_gls
+Para otro dataset (p. ej. WDBC), el config incluye una seccion 'dataset' con el mismo split del experimento:
+    python src/tune_optuna.py gls --config configs/optuna_gls_wdbc.yaml --output-dir results/wdbc/optuna_gls
 """
 
 import argparse

@@ -1,5 +1,5 @@
 """
-Carga y preprocesamiento de datos (Wine, BCW).
+Carga y preprocesamiento de datos (Wine, WDBC).
 Partición estratificada reproducible.
 """
 
@@ -107,18 +107,19 @@ def load_wine_data(seed_split: int = 300,
     return X_train, X_val, X_test, y_train, y_val, y_test, scaler
 
 
-def load_bcw_data(seed_split: int = 300,
-                  train_ratio: float = 0.0,
-                  val_ratio: float = 0.75,
-                  test_ratio: float = 0.25,
-                  path: str = "data/breast_cancer/breast-cancer-wisconsin.data",
-                  dedup: bool = False) -> Tuple:
+def load_wdbc_data(seed_split: int = 300,
+                   train_ratio: float = 0.0,
+                   val_ratio: float = 0.5,
+                   test_ratio: float = 0.5,
+                   path: str = "data/breast_cancer/wdbc.data",
+                   dedup: bool = False) -> Tuple:
     """
-    Carga Breast Cancer Wisconsin (Original) con el mismo protocolo que Wine.
+    Carga Breast Cancer Wisconsin (Diagnostic), 569 muestras x 30 features reales,
+    con el mismo protocolo de split/estandarizacion que Wine.
 
-    Clase 2 -> 0 (benigno), 4 -> 1 (maligno). Los '?' (bare_nuclei) se imputan con
-    la mediana del conjunto de trabajo (val), sin fuga hacia test.
-    Con dedup=True se quitan duplicados exactos (features + etiqueta) antes del split.
+    Formato: id, diagnostico (M/B), 30 features. B -> 0 (benigno), M -> 1 (maligno).
+    No tiene valores faltantes ni filas duplicadas (se verifico), por lo que `dedup`
+    no tiene efecto practico; se acepta solo por compatibilidad con las configs.
 
     Returns:
         Tupla (X_train, X_val, X_test, y_train, y_val, y_test, scaler)
@@ -128,12 +129,10 @@ def load_bcw_data(seed_split: int = 300,
 
     set_seed(seed_split)
 
-    cols = ["id", "clump_thickness", "uniformity_cell_size", "uniformity_cell_shape",
-            "marginal_adhesion", "single_epithelial_cell_size", "bare_nuclei",
-            "bland_chromatin", "normal_nucleoli", "mitoses", "class"]
-    df = pd.read_csv(path, header=None, names=cols, na_values="?").drop(columns=["id"])
-    df["class"] = df["class"].map({2: 0, 4: 1}) ## convertir datos categoricos 
-    
+    df = pd.read_csv(path, header=None).drop(columns=[0])
+    df = df.rename(columns={1: "class"})
+    df["class"] = df["class"].map({"B": 0, "M": 1})
+
     if dedup:
         n0 = len(df)
         df = df.drop_duplicates().reset_index(drop=True)
@@ -142,24 +141,13 @@ def load_bcw_data(seed_split: int = 300,
     X = df.drop(columns=["class"]).to_numpy(dtype=np.float64)
     y = df["class"].to_numpy(dtype=np.int64)
 
-    print(f"Dataset BCW cargado: {X.shape[0]} muestras, {X.shape[1]} features, {len(np.unique(y))} clases")
-
-    def _impute(X_fit, *others):
-        med = np.nanmedian(X_fit, axis=0)
-        out = []
-        for A in (X_fit,) + others:
-            A = A.copy()
-            idx = np.where(np.isnan(A))
-            A[idx] = med[idx[1]]
-            out.append(A)
-        return out
+    print(f"Dataset WDBC cargado: {X.shape[0]} muestras, {X.shape[1]} features, {len(np.unique(y))} clases")
 
     if train_ratio == 0.0:
         X_train, y_train = np.array([]), np.array([])
         relative_test_ratio = test_ratio / (val_ratio + test_ratio)
         X_val, X_test, y_val, y_test = train_test_split(
             X, y, test_size=relative_test_ratio, stratify=y, random_state=seed_split)
-        X_val, X_test = _impute(X_val, X_test)
         scaler = StandardScaler()
         X_val = scaler.fit_transform(X_val)
         X_test = scaler.transform(X_test)
@@ -170,7 +158,6 @@ def load_bcw_data(seed_split: int = 300,
         relative_test_ratio = test_ratio / temp_ratio
         X_val, X_test, y_val, y_test = train_test_split(
             X_temp, y_temp, test_size=relative_test_ratio, stratify=y_temp, random_state=seed_split)
-        X_train, X_val, X_test = _impute(X_train, X_val, X_test)
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
         X_val = scaler.transform(X_val)
@@ -191,10 +178,10 @@ def load_dataset(name: str, **kwargs) -> Tuple:
         kwargs.pop("path", None)
         kwargs.pop("dedup", None)
         return load_wine_data(**kwargs)
-    if name == "bcw":
+    if name == "wdbc":
         if kwargs.get("path") is None:
             kwargs.pop("path", None)
-        return load_bcw_data(**kwargs)
+        return load_wdbc_data(**kwargs)
     raise ValueError(f"Dataset no soportado: {name}")
 
 
