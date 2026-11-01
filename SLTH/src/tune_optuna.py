@@ -52,6 +52,9 @@ def _load_data(dataset: dict | None, seed_base: int):
 # GLS
 # ─────────────────────────────────────────────────────────────────────────────
 
+GLS_ALPHA_FIJO = 0.95
+
+
 class GLSOptunaOptimizer:
     def __init__(self, architectures: List[List[int]], sparsities: List[float],
                  n_trials: int = 20, seed_base: int = 42,
@@ -69,7 +72,9 @@ class GLSOptunaOptimizer:
         print(" Datos cargados")
 
     def objective(self, trial: Trial) -> float:
-        alpha = trial.suggest_float('alpha', 0.5, 0.99, step=0.05)
+        # alpha no se tunea: gls.evaluate_base_cost lo ignora (swap_1to1 conserva la densidad) y no
+        # está en la Tabla 2 del paper; se fija solo por compatibilidad de firma.
+        alpha = GLS_ALPHA_FIJO
         lambda_param = trial.suggest_float('lambda', 0.01, 0.5, step=0.01)
         max_iter = trial.suggest_int('max_iter', 500, 2000, step=100)
         max_no_improve = trial.suggest_int('max_no_improve', 50, 200, step=25)
@@ -137,7 +142,7 @@ class GLSOptunaOptimizer:
         bt = study.best_trial
         cfg = {
             'GLS': {
-                'alpha': bp['alpha'], 'lambda': bp['lambda'],
+                'alpha': GLS_ALPHA_FIJO, 'lambda': bp['lambda'],
                 'max_iter': bp['max_iter'], 'max_evals': 10000,
                 'max_no_improve': bp['max_no_improve'],
                 'ls_max_neighbors': bp['ls_max_neighbors'],
