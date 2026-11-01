@@ -26,7 +26,7 @@ def create_mask(weight_shapes: List[Tuple[int, int]],
         Lista de tensores binarios (máscaras) por capa
     """
     if seed is not None:
-        torch.manual_seed(seed)
+        torch.default_generator.manual_seed(seed)  # solo CPU: evita el costo de torch.manual_seed (siembra CUDA + format_stack)
         np.random.seed(seed)
     
     masks = []
@@ -58,24 +58,21 @@ def _repair_layer_connectivity(layer_mask: torch.Tensor) -> torch.Tensor:
     de conexiones activas lo más cercano posible al original.
     """
     repaired = layer_mask.clone()
-
-    # Asegurar al menos una conexión por fila (neurona de salida)
     rows, cols = repaired.shape
 
-    # Asegurar una entrada por neurona de salida (fila)
-    for i in range(rows):
-        row = repaired[i]
-        if row.sum() == 0:
-            # Activar una conexión aleatoria en la fila
-            j = torch.randint(0, cols, (1,)).item()
-            repaired[i, j] = 1.0
+    # Versión vectorizada: solo se itera sobre las filas/columnas vacías (pocas),
+    # en el mismo orden ascendente que el bucle original, así que consume el RNG
+    # igual y produce exactamente el mismo resultado.
 
-    # Asegurar una salida por neurona de entrada (columna)
-    for j in range(cols):
-        col = repaired[:, j]
-        if col.sum() == 0:
-            i = torch.randint(0, rows, (1,)).item()
-            repaired[i, j] = 1.0
+    # Una entrada por neurona de salida (fila)
+    for i in (repaired.sum(dim=1) == 0).nonzero().flatten().tolist():
+        j = torch.randint(0, cols, (1,)).item()
+        repaired[i, j] = 1.0
+
+    # Una salida por neurona de entrada (columna); se evalúa tras reparar las filas
+    for j in (repaired.sum(dim=0) == 0).nonzero().flatten().tolist():
+        i = torch.randint(0, rows, (1,)).item()
+        repaired[i, j] = 1.0
 
     return repaired
 
@@ -91,7 +88,7 @@ def repair_mask_connectivity(mask: List[torch.Tensor], seed: int = None) -> List
     reduce fuertemente la probabilidad de no tener camino input→output.
     """
     if seed is not None:
-        torch.manual_seed(seed)
+        torch.default_generator.manual_seed(seed)  # solo CPU: evita el costo de torch.manual_seed (siembra CUDA + format_stack)
         np.random.seed(seed)
 
     repaired = []
@@ -117,7 +114,7 @@ def ensure_input_output_path(mask: List[torch.Tensor], seed: int = None) -> List
     sparsity fina (apenas agrega algunas conexiones).
     """
     if seed is not None:
-        torch.manual_seed(seed)
+        torch.default_generator.manual_seed(seed)  # solo CPU: evita el costo de torch.manual_seed (siembra CUDA + format_stack)
         np.random.seed(seed)
 
     if len(mask) == 0:
@@ -202,7 +199,7 @@ def swap_1to1(mask: List[torch.Tensor], seed: int = None) -> List[torch.Tensor]:
         Nueva máscara (vecino)
     """
     if seed is not None:
-        torch.manual_seed(seed)
+        torch.default_generator.manual_seed(seed)  # solo CPU: evita el costo de torch.manual_seed (siembra CUDA + format_stack)
         np.random.seed(seed)
     
     # Copiar máscara
@@ -250,7 +247,7 @@ def sample_swaps(mask: List[torch.Tensor], K: int, seed: int = None) -> List[Tup
         movimiento = (layer_idx, off_idx, on_idx)
     """
     if seed is not None:
-        torch.manual_seed(seed)
+        torch.default_generator.manual_seed(seed)  # solo CPU: evita el costo de torch.manual_seed (siembra CUDA + format_stack)
         np.random.seed(seed)
     
     neighbors = []

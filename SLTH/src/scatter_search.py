@@ -106,24 +106,13 @@ def mask_to_move(mask1: List[torch.Tensor], mask2: List[torch.Tensor]) -> Tuple:
         Tupla (layer_idx, pos_off, pos_on) representando el swap realizado
     """
     for layer_idx, (m1, m2) in enumerate(zip(mask1, mask2)):
-        diff = (m1 - m2).abs()
-        if diff.sum() > 0:
-            # Encontrar posiciones que cambiaron
-            changed = torch.nonzero(diff)
-            if len(changed) >= 2:
-                # Una fue apagada (1->0) y otra encendida (0->1)
-                pos_off = None
-                pos_on = None
-                for pos in changed:
-                    pos_tuple = tuple(pos.tolist())
-                    if m1[pos_tuple] == 1 and m2[pos_tuple] == 0:
-                        pos_off = pos_tuple
-                    elif m1[pos_tuple] == 0 and m2[pos_tuple] == 1:
-                        pos_on = pos_tuple
-                
-                if pos_off is not None and pos_on is not None:
-                    return (layer_idx, pos_off, pos_on)
-    
+        delta = m2 - m1
+        off = (delta == -1).nonzero()  # 1 -> 0
+        on = (delta == 1).nonzero()    # 0 -> 1
+        if len(off) > 0 and len(on) > 0 and len(off) + len(on) >= 2:
+            # Igual que antes: se toma la última posición de cada tipo (orden row-major)
+            return (layer_idx, tuple(off[-1].tolist()), tuple(on[-1].tolist()))
+
     return None
 
 
