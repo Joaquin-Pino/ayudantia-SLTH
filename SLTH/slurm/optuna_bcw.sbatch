@@ -2,6 +2,8 @@
 # Búsqueda de hiperparámetros con Optuna sobre BCW: un job array con una tarea por método
 # (0 = GLS, 1 = SS, 2 = GA+TABU+NSGA2). Cada tarea corre un estudio de Optuna en serie.
 #
+# Los tiempos por método difieren (GLS ~1 h, SS y GA ~8 h): lánzalo con `bash slurm/lanzar_bcw.sh optuna`.
+#
 # Uso (desde SLTH/):
 #   mkdir -p logs && sbatch slurm/optuna_bcw.sbatch
 #   sbatch --array=1 slurm/optuna_bcw.sbatch          # solo SS
@@ -13,7 +15,7 @@
 #SBATCH --array=0-2
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
-#SBATCH --time=24:00:00
+#SBATCH --time=08:00:00
 #SBATCH --output=logs/%x_%A_%a.out
 #SBATCH --error=logs/%x_%A_%a.out
 #SBATCH --partition=GPU

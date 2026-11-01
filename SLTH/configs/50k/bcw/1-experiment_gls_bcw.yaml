@@ -5,7 +5,7 @@
 dataset:
   name: "bcw"
   path: "data/breast_cancer/breast-cancer-wisconsin.data"
-  dedup: false   # decisión pendiente
+  dedup: true   # duplicados exactos eliminados antes del split (evita fuga entre búsqueda y test)
   seed_split: [300]
   train_ratio: 0.0 
   val_ratio: 0.75  
@@ -16,7 +16,6 @@ architectures:
   - [9, 128, 2]                  # R1
   - [9, 256, 128, 2]             # R2
   - [9, 512, 256, 128, 2]        # R3
-  - [9, 1024, 512, 256, 128, 2]  # R5
 
 # Sparsity levels
 sparsities: [0.1,0.2,0.28,0.3,0.4,0.5]
